@@ -1,4 +1,4 @@
-# healthpass1
+# Project MycoMesh
 Summary of Functions
 1. Medical Record Upload & AI Analysis
 
