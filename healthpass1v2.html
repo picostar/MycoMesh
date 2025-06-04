@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyHealth AI Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 414px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4A90E2, #357ABD);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            flex: 1;
+            min-width: 80px;
+            padding: 15px 10px;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #4A90E2;
+            border-bottom: 2px solid #4A90E2;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .upload-area {
+            border: 2px dashed #4A90E2;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #357ABD;
+            background: #f8f9ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #357ABD;
+            background: #f0f8ff;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #4A90E2;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4A90E2, #357ABD);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+        }
+
+        .btn-ai {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            font-size: 14px;
+        }
+
+        .record-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #4A90E2;
+            transition: all 0.3s ease;
+        }
+
+        .record-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .record-card.ai-reviewed {
+            border-left-color: #28a745;
+        }
+
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .record-title {
+            font-weight: 600;
+            color: #2c3e50;
+            flex-grow: 1;
+        }
+
+        .record-date {
+            font-size: 12px;
+            color: #6c757d;
+            background: #f8f9fa;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .ai-badge {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            margin-left: 10px;
+        }
+
+        .record-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .record-actions button {
+            flex: 1;
+            min-width: 80px;
+            padding: 8px;
+            font-size: 13px;
+        }
+
+        .ai-analysis {
+            background: linear-gradient(135deg, #e8f5e8, #f0fff0);
+            border: 1px solid #28a745;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .ai-analysis.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .ai-section {
+            margin-bottom: 15px;
+        }
+
+        .ai-section h4 {
+            color: #28a745;
+            font-size: 14px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .ai-section h4::before {
+            content: "🤖";
+            margin-right: 8px;
+        }
+
+        .ai-insights {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .ai-recommendations {
+            background: #fff;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+        .recommendation-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .recommendation-item:hover {
+            background: #e9ecef;
+        }
+
+        .priority-high {
+            border-left: 4px solid #dc3545;
+        }
+
+        .priority-medium {
+            border-left: 4px solid #ffc107;
+        }
+
+        .priority-low {
+            border-left: 4px solid #28a745;
+        }
+
+        .share-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .share-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .share-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4A90E2;
+        }
+
+        .checkbox-group {
+            margin-bottom: 15px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .ai-suggested {
+            border: 2px solid #28a745;
+            background: #e8f5e8;
+        }
+
+        .ai-suggested::after {
+            content: "✨ AI Recommended";
+            font-size: 11px;
+            color: #28a745;
+            font-weight: 500;
+            margin-left: auto;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-stored { background: #28a745; }
+        .status-shared { background: #17a2b8; }
+        .status-pending { background: #ffc107; }
+        .status-reviewed { background: #6f42c1; }
+
+        .blockchain-hash {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #6c757d;
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+            word-break: break-all;
+            margin-top: 10px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4A90E2;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .alert.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+
+        .ai-dashboard {
+            background: linear-gradient(135deg, #f8f9ff, #e6f3ff);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .ai-summary {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .health-score {
+            font-size: 48px;
+            font-weight: bold;
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+
+        .health-score.warning { color: #ffc107; }
+        .health-score.danger { color: #dc3545; }
+
+        .ai-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .provider-suggestion {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .provider-suggestion:hover {
+            border-color: #4A90E2;
+            transform: translateY(-1px);
+        }
+
+        .provider-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .provider-specialty {
+            font-size: 13px;
+            color: #6c757d;
+            margin-bottom: 8px;
+        }
+
+        .provider-reason {
+            font-size: 12px;
+            color: #28a745;
+            background: #e8f5e8;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .chat-interface {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .chat-message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .chat-message.user {
+            background: #e3f2fd;
+            margin-left: 20%;
+        }
+
+        .chat-message.ai {
+            background: #e8f5e8;
+            margin-right: 20%;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 healthpass1</h1>
+            <p>Health Record Sharing • AI-Powered Insights</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('upload')">Upload</button>
+            <button class="nav-tab" onclick="showTab('records')">Records</button>
+            <button class="nav-tab" onclick="showTab('ai')">AI Insights</button>
+            <button class="nav-tab" onclick="showTab('share')">Smart Share</button>
+            <button class="nav-tab" onclick="showTab('chat')">AI Chat</button>
+        </div>
+
+        <div id="alert" class="alert"></div>
+
+        <!-- Upload Tab -->
+        <div id="upload-tab" class="tab-content active">
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📁</div>
+                <h3>Upload Medical Records</h3>
+                <p>AI will analyze your records automatically</p>
+                <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                    Supported: PDF, JPG, PNG, DICOM, Lab Results
+                </p>
+            </div>
+            <input type="file" id="fileInput" style="display: none;" multiple accept=".pdf,.jpg,.jpeg,.png,.dcm,.txt">
+            
+            <div class="form-group">
+                <label class="form-label">Record Type</label>
+                <select class="form-input" id="recordType">
+                    <option value="lab">Lab Results</option>
+                    <option value="imaging">Medical Imaging</option>
+                    <option value="prescription">Prescription</option>
+                    <option value="visit">Doctor Visit Notes</option>
+                    <option value="vaccine">Vaccination Record</option>
+                    <option value="vitals">Vital Signs</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <input type="text" class="form-input" id="recordDescription" placeholder="Brief description of the record">
+            </div>
+
+            <div id="uploadLoading" class="loading">
+                <div class="spinner"></div>
+                <p>Encrypting, uploading, and running AI analysis...</p>
+            </div>
+
+            <button class="btn btn-secondary" style="margin-bottom: 20px;" onclick="simulateFileUpload()">
+                Simulate Colonoscopy File Upload
+            </button>
+        </div>
+
+        <!-- Records Tab -->
+        <div id="records-tab" class="tab-content">
+            <div id="recordsList">
+                <!-- Records will be populated here -->
+            </div>
+        </div>
+
+        <!-- AI Insights Tab -->
+        <div id="ai-tab" class="tab-content">
+            <div class="ai-dashboard">
+                <div class="ai-summary">
+                    <div id="healthScore" class="health-score">85</div>
+                    <p><strong>Overall Health Score</strong></p>
+                    <p style="font-size: 14px; color: #6c757d;">Based on your recent records</p>
+                </div>
+                
+                <div class="ai-actions">
+                    <button class="btn btn-ai" onclick="generateHealthSummary()">📊 Health Summary</button>
+                    <button class="btn btn-ai" onclick="findTrends()">📈 Find Trends</button>
+                    <button class="btn btn-ai" onclick="checkRisks()">⚠️ Risk Analysis</button>
+                    <button class="btn btn-ai" onclick="getRecommendations()">💡 Recommendations</button>
+                </div>
+            </div>
+
+            <div id="aiInsightsContent">
+                <!-- AI insights will be populated here -->
+            </div>
+        </div>
+
+        <!-- Smart Share Tab -->
+        <div id="share-tab" class="tab-content">
+            <h3 style="margin-bottom: 20px;">🎯 AI-Recommended Sharing</h3>
+            
+            <div id="shareRecommendations">
+                <!-- AI sharing recommendations will appear here -->
+            </div>
+        </div>
+
+        <!-- AI Chat Tab -->
+        <div id="chat-tab" class="tab-content">
+            <h3 style="margin-bottom: 15px;">💬 Chat with AI Health Assistant</h3>
+            
+            <div id="chatInterface" class="chat-interface">
+                <div class="chat-message ai">
+                    <strong>AI Assistant:</strong><br>
+                    Hello! I'm your AI health assistant. I can help you understand your medical records, explain test results, and suggest which healthcare providers might be relevant for your care. What would you like to know?
+                </div>
+            </div>
+            
+            <div class="chat-input">
+                <input type="text" id="chatInput" class="form-input" placeholder="Ask about your health records..." onkeypress="handleChatKeyPress(event)">
+                <button class="btn" onclick="sendChatMessage()" style="width: auto; padding: 12px;">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="share-modal">
+        <div class="share-content">
+            <h3 style="margin-bottom: 20px;">🤖 AI-Assisted Sharing</h3>
+            
+            <div id="aiShareAnalysis" class="ai-analysis">
+                <!-- AI analysis for sharing will appear here -->
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Recipient (Doctor/Provider)</label>
+                <input type="email" class="form-input" id="recipientEmail" placeholder="doctor@hospital.com">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Recipient Wallet Address</label>
+                <input type="text" class="form-input" id="recipientWallet" placeholder="0x...">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">🤖 AI-Recommended Providers</label>
+                <div id="providerSuggestions">
+                    <!-- AI provider suggestions will appear here -->
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Select Record Sections to Share</label>
+                <div class="checkbox-group" id="recordSections">
+                    <!-- Will be populated dynamically with AI recommendations -->
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Access Duration</label>
+                <select class="form-input" id="accessDuration">
+                    <option value="1">1 Day</option>
+                    <option value="7">1 Week</option>
+                    <option value="30" selected>1 Month</option>
+                    <option value="90">3 Months</option>
+                    <option value="365">1 Year</option>
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="closeShareModal()">Cancel</button>
+                <button class="btn" onclick="shareRecord()">Share Record</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced health records with AI analysis
+        let healthRecords = [
+            {
+                id: 'rec_001',
+                type: 'lab',
+                title: 'Blood Test Results',
+                date: '2024-05-15',
+                description: 'Complete Blood Count & Lipid Panel',
+                azureBlobUrl: 'https://healthstorage.blob.core.windows.net/records/rec_001.pdf',
+                blockchainHash: '0x1a2b3c4d5e6f7890abcdef1234567890abcdef12',
+                sections: ['CBC Results', 'Lipid Panel', 'Doctor Notes'],
+                status: 'reviewed',
+                sharedWith: [],
+                aiAnalysis: {
+                    summary: 'Blood work shows excellent overall health with all values within normal ranges.',
+                    insights: [
+                        'Total cholesterol: 165 mg/dL (Excellent - below 200)',
+                        'HDL cholesterol: 58 mg/dL (Good - above 40)',
+                        'Blood glucose: 92 mg/dL (Normal - below 100)',
+                        'White blood cell count: Normal, indicating good immune function'
+                    ],
+                    recommendations: [
+                        {
+                            priority: 'low',
+                            action: 'Continue current diet and exercise routine',
+                            reasoning: 'All lipid levels are in optimal range'
+                        },
+                        {
+                            priority: 'medium',
+                            action: 'Consider sharing with primary care physician',
+                            reasoning: 'Annual review recommended for ongoing health monitoring'
+                        }
+                    ],
+                    shareRecommendations: [
+                        {
+                            provider: 'Primary Care Physician',
+                            specialty: 'Family Medicine',
+                            reason: 'Annual health monitoring and preventive care',
+                            sections: ['CBC Results', 'Lipid Panel'],
+                            priority: 'medium'
+                        }
+                    ]
+                }
+            },
+            {
+                id: 'rec_002',
+                type: 'imaging',
+                title: 'Chest X-Ray',
+                date: '2024-06-01',
+                description: 'Annual chest X-ray screening',
+                azureBlobUrl: 'https://healthstorage.blob.core.windows.net/records/rec_002.dcm',
+                blockchainHash: '0x2b3c4d5e6f7890abcdef1234567890abcdef1234',
+                sections: ['X-Ray Images', 'Radiologist Report', 'Technical Parameters'],
+                status: 'reviewed',
+                sharedWith: ['Dr. Smith'],
+                aiAnalysis: {
+                    summary: 'Clear chest X-ray with no acute findings. Normal heart and lung appearance.',
+                    insights: [
+                        'Heart size: Normal cardiac silhouette',
+                        'Lungs: Clear bilateral lung fields, no infiltrates',
+                        'Bones: No acute fractures or abnormalities visible',
+                        'Overall: No acute cardiopulmonary process identified'
+                    ],
+                    recommendations: [
+                        {
+                            priority: 'low',
+                            action: 'Routine follow-up in 1 year',
+                            reasoning: 'Normal baseline study for annual screening'
+                        }
+                    ],
+                    shareRecommendations: [
+                        {
+                            provider: 'Pulmonologist',
+                            specialty: 'Pulmonary Medicine',
+                            reason: 'If respiratory symptoms develop',
+                            sections: ['X-Ray Images', 'Radiologist Report'],
+                            priority: 'low'
+                        }
+                    ]
+                }
+            },
+            {
+                id: 'rec_003',
+                type: 'vitals',
+                title: 'Blood Pressure Monitoring',
+                date: '2024-06-03',
+                description: 'Home blood pressure readings - 2 weeks',
+                azureBlobUrl: 'https://healthstorage.blob.core.windows.net/records/rec_003.pdf',
+                blockchainHash: '0x3c4d5e6f7890abcdef1234567890abcdef123456',
+                sections: ['Daily Readings', 'Average Values', 'Trends'],
+                status: 'reviewed',
+                sharedWith: [],
+                aiAnalysis: {
+                    summary: 'Blood pressure readings show mild elevation with upward trend over 2 weeks.',
+                    insights: [
+                        'Average BP: 142/88 mmHg (Stage 1 Hypertension)',
+                        'Trend: Gradual increase from 138/85 to 146/91',
+                        'Morning readings consistently higher than evening',
+                        'No readings below 135/80 in past week'
+                    ],
+                    recommendations: [
+                        {
+                            priority: 'high',
+                            action: 'Schedule appointment with cardiologist within 2 weeks',
+                            reasoning: 'Consistent Stage 1 hypertension requires medical evaluation'
+                        },
+                        {
+                            priority: 'high',
+                            action: 'Share with primary care physician immediately',
+                            reasoning: 'May need medication adjustment or lifestyle modifications'
+                        }
+                    ],
+                    shareRecommendations: [
+                        {
+                            provider: 'Dr. Sarah Johnson, MD',
+                            specialty: 'Cardiology',
+                            reason: 'Elevated blood pressure trend requires cardiac evaluation',
+                            sections: ['Daily Readings', 'Trends'],
+                            priority: 'high'
+                        },
+                        {
+                            provider: 'Dr. Michael Chen, MD',
+                            specialty: 'Internal Medicine',
+                            reason: 'Primary care management of hypertension',
+                            sections: ['Average Values', 'Trends'],
+                            priority: 'high'
+                        }
+                    ]
+                }
+            }
+        ];
+
+        let currentRecord = null;
+
+        // Tab Management
+        function showTab(tabName) {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName + '-tab').classList.add('active');
+
+            if (tabName === 'records') {
+                loadRecords();
+            } else if (tabName === 'ai') {
+                loadAIInsights();
+            } else if (tabName === 'share') {
+                loadShareRecommendations();
+            }
+        }
+
+        // File Upload with AI Analysis
+        document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            if (files.length > 0) {
+                showAlert(`${files.length} file(s) selected. Click "Upload & AI Analyze" to proceed.`, 'success');
+            }
+        }
+
+        async function uploadRecord() {
+            const files = document.getElementById('fileInput').files;
+            const recordType = document.getElementById('recordType').value;
+            const description = document.getElementById('recordDescription').value;
+
+            if (files.length === 0) {
+                showAlert('Please select files to upload.', 'error');
+                return;
+            }
+
+            if (!description.trim()) {
+                showAlert('Please provide a description for the record.', 'error');
+                return;
+            }
+
+            document.getElementById('uploadLoading').classList.add('active');
+            document.getElementById('uploadBtnText').textContent = 'AI Analyzing...';
+
+            try {
+                await simulateUpload();
+                const aiAnalysis = await simulateAIAnalysis(recordType);
+
+                const newRecord = {
+                    id: 'rec_' + Date.now(),
+                    type: recordType,
+                    title: description,
+                    date: new Date().toISOString().split('T')[0],
+                    description: description,
+                    azureBlobUrl: `https://healthstorage.blob.core.windows.net/records/rec_${Date.now()}.pdf`,
+                    blockchainHash: '0x' + Math.random().toString(16).substr(2, 40),
+                    sections: generateSections(recordType),
+                    status: 'reviewed',
+                    sharedWith: [],
+                    aiAnalysis: aiAnalysis
+                };
+
+                healthRecords.push(newRecord);
+                
+                showAlert('Record uploaded and AI analysis complete!', 'success');
+                
+                document.getElementById('fileInput').value = '';
+                document.getElementById('recordDescription').value = '';
+                
+                showTab('records');
+                
+            } catch (error) {
+                showAlert('Upload failed. Please try again.', 'error');
+            } finally {
+                document.getElementById('uploadLoading').classList.remove('active');
+                document.getElementById('uploadBtnText').textContent = '🔒 Upload & AI Analyze';
+            }
+        }
+
+        function simulateUpload() {
+            return new Promise(resolve => {
+                setTimeout(resolve, 2000);
+            });
+        }
+
+        async function simulateAIAnalysis(recordType) {
+            // Simulate AI processing time
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            
+            const analysisTemplates = {
+                'lab': {
+                    summary: 'Lab results analyzed using AI pattern recognition. Key biomarkers identified and compared to reference ranges.',
+                    insights: [
+                        'Glucose levels within normal range (70-100 mg/dL)',
+                        'Cholesterol panel shows good cardiovascular health',
+                        'Liver function tests normal',
+                        'Kidney function markers stable'
+                    ],
+                    recommendations: [
+                        {
+                            priority: 'medium',
+                            action: 'Share with primary care physician for routine follow-up',
+                            reasoning: 'Preventive care and trend monitoring'
+                        }
+                    ],
+                    shareRecommendations: [
+                        {
+                            provider: 'Primary Care Physician',
+                            specialty: 'Family Medicine',
+                            reason: 'Routine lab monitoring and preventive care',
+                            sections: ['Test Results', 'Reference Ranges'],
+                            priority: 'medium'
+                        }
+                    ]
+                },
+                'imaging': {
+                    summary: 'Medical imaging analyzed using computer vision AI. No acute abnormalities detected.',
+                    insights: [
+                        'Image quality: Excellent diagnostic quality',
+                        'Anatomical structures: Normal appearance',
+                        'No signs of acute pathology',
+                        'Comparison to previous studies recommended'
+                    ],
+                    recommendations: [
+                        {
+                            priority: 'low',
+                            action: 'Archive for future reference',
+                            reasoning: 'Normal baseline study'
+                        }
+                    ],
+                    shareRecommendations: [
+                        {
+                            provider: 'Radiologist',
+                            specialty: 'Radiology',
+                            reason: 'Professional interpretation and reporting',
+                            sections: ['Images', 'Technical Parameters'],
+                            priority: 'medium'
+                        }
+                    ]
+                },
+                'vitals': {
+                    summary: 'Vital signs trending analysis completed. Pattern recognition applied to identify health trends.',
+                    insights: [
+                        'Blood pressure: Within normal range',
+                        'Heart rate: Regular rhythm detected',
+                        'Temperature: Stable baseline',
+                        'Respiratory rate: Normal patterns'
+                    ],
+                    recommendations: [
+                        {
+                            priority: 'low',
+                            action: 'Continue regular monitoring',
+                            reasoning: 'Stable vital signs indicate good health status'
+                        }
+                    ],
+                    shareRecommendations: [
+                        {
+                            provider: 'Primary Care Physician',
+                            specialty: 'Family Medicine',
+                            reason: 'Ongoing health monitoring and wellness check',
+                            sections: ['Vital Signs', 'Trends'],
+                            priority: 'low'
+                        }
+                    ]
+                }
+            };
+
+            return analysisTemplates[recordType] || analysisTemplates['lab'];
+        }
+
+        function generateSections(recordType) {
+            const sectionMap = {
+                'lab': ['Test Results', 'Reference Ranges', 'Doctor Notes'],
+                'imaging': ['Images', 'Radiologist Report', 'Technical Parameters'],
+                'prescription': ['Medication List', 'Dosage Instructions', 'Prescriber Info'],
+                'visit': ['Symptoms', 'Examination', 'Diagnosis', 'Treatment Plan'],
+                'vaccine': ['Vaccine Information', 'Administration Details', 'Next Dose'],
+                'vitals': ['Vital Signs', 'Trends', 'Baseline Values'],
+                'other': ['Document Content', 'Additional Notes']
+            };
+            return sectionMap[recordType] || ['Document Content'];
+        }
+
+        // Load Records with AI indicators
+        function loadRecords() {
+            const recordsList = document.getElementById('recordsList');
+            recordsList.innerHTML = '';
+
+            healthRecords.forEach(record => {
+                const recordCard = createRecordCard(record);
+                recordsList.appendChild(recordCard);
+            });
+        }
+
+        function createRecordCard(record) {
+            const card = document.createElement('div');
+            card.className = `record-card ${record.aiAnalysis ? 'ai-reviewed' : ''}`;
+            
+            const highPriorityRecs = record.aiAnalysis ? 
+                record.aiAnalysis.recommendations.filter(r => r.priority === 'high').length : 0;
+            
+            card.innerHTML = `
+                <div class="record-header">
+                    <div class="record-title">${record.title}</div>
+                    <div style="display: flex; align-items: center;">
+                        <div class="record-date">${record.date}</div>
+                        ${record.aiAnalysis ? '<div class="ai-badge">AI ✓</div>' : ''}
+                    </div>
+                </div>
+                <p style="color: #6c757d; margin-bottom: 10px;">${record.description}</p>
+                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                    <span class="status-indicator status-${record.status}"></span>
+                    <span style="font-size: 14px; text-transform: capitalize;">${record.status}</span>
+                    ${record.sharedWith.length > 0 ? `<span style="margin-left: 10px; font-size: 12px; color: #17a2b8;">Shared with ${record.sharedWith.length} provider(s)</span>` : ''}
+                    ${highPriorityRecs > 0 ? `<span style="margin-left: 10px; font-size: 12px; color: #dc3545; font-weight: 500;">⚠️ ${highPriorityRecs} urgent recommendation(s)</span>` : ''}
+                </div>
+                <div class="blockchain-hash">
+                    Blockchain Hash: ${record.blockchainHash}
+                </div>
+                <div class="record-actions">
+                    <button class="btn btn-secondary" onclick="viewRecord('${record.id}')">View</button>
+                    ${record.aiAnalysis ? `<button class="btn btn-ai" onclick="showAIAnalysis('${record.id}')">🤖 AI</button>` : ''}
+                    <button class="btn" onclick="openShareModal('${record.id}')">Share</button>
+                </div>
+                <div id="ai-analysis-${record.id}" class="ai-analysis">
+                    <!-- AI analysis will be populated here -->
+                </div>
+            `;
+            return card;
+        }
+
+        // AI Analysis Functions
+        function showAIAnalysis(recordId) {
+            const record = healthRecords.find(r => r.id === recordId);
+            if (!record || !record.aiAnalysis) return;
+
+            const analysisDiv = document.getElementById(`ai-analysis-${recordId}`);
+            
+            if (analysisDiv.classList.contains('active')) {
+                analysisDiv.classList.remove('active');
+                return;
+            }
+
+            analysisDiv.innerHTML = `
+                <div class="ai-section">
+                    <h4>Summary</h4>
+                    <div class="ai-insights">${record.aiAnalysis.summary}</div>
+                </div>
+                
+                <div class="ai-section">
+                    <h4>Key Insights</h4>
+                    <div class="ai-insights">
+                        ${record.aiAnalysis.insights.map(insight => `<div>• ${insight}</div>`).join('')}
+                    </div>
+                </div>
+                
+                <div class="ai-section">
+                    <h4>Recommendations</h4>
+                    <div class="ai-recommendations">
+                        ${record.aiAnalysis.recommendations.map(rec => `
+                            <div class="recommendation-item priority-${rec.priority}">
+                                <div>
+                                    <strong>${rec.action}</strong><br>
+                                    <small>${rec.reasoning}</small>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            analysisDiv.classList.add('active');
+        }
+
+        // AI Insights Tab Functions
+        function loadAIInsights() {
+            updateHealthScore();
+            const content = document.getElementById('aiInsightsContent');
+            content.innerHTML = `
+                <div style="text-align: center; color: #6c757d; margin-top: 40px;">
+                    <p>Select an AI action above to view insights</p>
+                </div>
+            `;
+        }
+
+        function updateHealthScore() {
+            // Calculate health score based on records
+            const reviewedRecords = healthRecords.filter(r => r.aiAnalysis);
+            const highPriorityIssues = reviewedRecords.reduce((count, record) => {
+                return count + (record.aiAnalysis.recommendations?.filter(r => r.priority === 'high').length || 0);
+            }, 0);
+
+            let score = 85; // Base score
+            score -= highPriorityIssues * 15; // Reduce for high priority issues
+            score = Math.max(score, 40); // Minimum score
+
+            const scoreEl = document.getElementById('healthScore');
+            scoreEl.textContent = score;
+            
+            if (score >= 80) {
+                scoreEl.className = 'health-score';
+            } else if (score >= 60) {
+                scoreEl.className = 'health-score warning';
+            } else {
+                scoreEl.className = 'health-score danger';
+            }
+        }
+
+        function generateHealthSummary() {
+            const content = document.getElementById('aiInsightsContent');
+            const reviewedRecords = healthRecords.filter(r => r.aiAnalysis);
+            
+            content.innerHTML = `
+                <div class="ai-analysis active">
+                    <div class="ai-section">
+                        <h4>📊 Health Summary</h4>
+                        <div class="ai-insights">
+                            Based on analysis of ${reviewedRecords.length} recent records:
+                            <br><br>
+                            <strong>Recent Records:</strong><br>
+                            ${reviewedRecords.map(r => `• ${r.title} (${r.date})`).join('<br>')}
+                            <br><br>
+                            <strong>Overall Status:</strong><br>
+                            Your health metrics show ${reviewedRecords.length > 0 ? 'active monitoring and good engagement with healthcare' : 'limited recent data for comprehensive analysis'}.
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function findTrends() {
+            const content = document.getElementById('aiInsightsContent');
+            content.innerHTML = `
+                <div class="ai-analysis active">
+                    <div class="ai-section">
+                        <h4>📈 Health Trends</h4>
+                        <div class="ai-insights">
+                            <strong>Blood Pressure Trend:</strong><br>
+                            ⚠️ Upward trend detected in recent readings (142/88 avg)<br><br>
+                            
+                            <strong>Lab Results Trend:</strong><br>
+                            ✅ Stable and within normal ranges<br><br>
+                            
+                            <strong>Imaging Follow-up:</strong><br>
+                            ✅ Current with routine screening<br><br>
+                            
+                            <strong>Recommendation:</strong><br>
+                            Focus on blood pressure management - consider cardiology consultation.
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function checkRisks() {
+            const content = document.getElementById('aiInsightsContent');
+            content.innerHTML = `
+                <div class="ai-analysis active">
+                    <div class="ai-section">
+                        <h4>⚠️ Risk Analysis</h4>
+                        <div class="ai-insights">
+                            <div class="recommendation-item priority-high">
+                                <strong>Cardiovascular Risk:</strong><br>
+                                Elevated blood pressure readings suggest increased cardiovascular risk. Recommend cardiology evaluation.
+                            </div>
+                            <br>
+                            <div class="recommendation-item priority-low">
+                                <strong>Preventive Care:</strong><br>
+                                Current with routine screenings. Continue regular monitoring.
+                            </div>
+                            <br>
+                            <div class="recommendation-item priority-medium">
+                                <strong>Health Maintenance:</strong><br>
+                                Consider lifestyle modifications for blood pressure management.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getRecommendations() {
+            const content = document.getElementById('aiInsightsContent');
+            content.innerHTML = `
+                <div class="ai-analysis active">
+                    <div class="ai-section">
+                        <h4>💡 AI Recommendations</h4>
+                        <div class="ai-recommendations">
+                            <div class="recommendation-item priority-high">
+                                <strong>🏥 Schedule Cardiology Appointment</strong><br>
+                                <small>Your blood pressure trend shows elevation. Early intervention is recommended.</small>
+                            </div>
+                            <div class="recommendation-item priority-medium">
+                                <strong>📋 Share BP Data with Primary Care</strong><br>
+                                <small>Your doctor should review recent blood pressure readings for medication adjustment.</small>
+                            </div>
+                            <div class="recommendation-item priority-low">
+                                <strong>📱 Continue Health Monitoring</strong><br>
+                                <small>Keep tracking vital signs and uploading records for AI analysis.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Smart Share Functions
+        function loadShareRecommendations() {
+            const container = document.getElementById('shareRecommendations');
+            
+            // Get all AI share recommendations
+            const allRecommendations = healthRecords
+                .filter(r => r.aiAnalysis && r.aiAnalysis.shareRecommendations)
+                .flatMap(r => r.aiAnalysis.shareRecommendations.map(rec => ({...rec, recordId: r.id, recordTitle: r.title})));
+
+            if (allRecommendations.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6c757d; margin-top: 40px;">Upload records with AI analysis to see sharing recommendations.</p>';
+                return;
+            }
+
+            // Sort by priority
+            const priorityOrder = {'high': 0, 'medium': 1, 'low': 2};
+            allRecommendations.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+
+            container.innerHTML = allRecommendations.map(rec => `
+                <div class="provider-suggestion priority-${rec.priority}" onclick="quickShare('${rec.recordId}', '${rec.provider}')">
+                    <div class="provider-name">${rec.provider}</div>
+                    <div class="provider-specialty">${rec.specialty}</div>
+                    <div class="provider-reason">${rec.reason}</div>
+                    <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                        📄 ${rec.recordTitle} → Sections: ${rec.sections.join(', ')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function quickShare(recordId, providerName) {
+            openShareModal(recordId);
+            // Pre-fill provider name
+            document.getElementById('recipientEmail').value = providerName.toLowerCase().replace(/\s+/g, '.') + '@hospital.com';
+        }
+
+        // Share Modal Functions
+        function openShareModal(recordId) {
+            currentRecord = healthRecords.find(r => r.id === recordId);
+            if (!currentRecord) return;
+
+            // Show AI analysis for sharing
+            const aiAnalysisDiv = document.getElementById('aiShareAnalysis');
+            if (currentRecord.aiAnalysis) {
+                aiAnalysisDiv.innerHTML = `
+                    <div class="ai-section">
+                        <h4>AI Sharing Analysis</h4>
+                        <div class="ai-insights">
+                            ${currentRecord.aiAnalysis.summary}
+                        </div>
+                    </div>
+                `;
+                aiAnalysisDiv.classList.add('active');
+            }
+
+            // Populate provider suggestions
+            const suggestionsContainer = document.getElementById('providerSuggestions');
+            if (currentRecord.aiAnalysis && currentRecord.aiAnalysis.shareRecommendations) {
+                suggestionsContainer.innerHTML = currentRecord.aiAnalysis.shareRecommendations.map(rec => `
+                    <div class="provider-suggestion" onclick="selectProvider('${rec.provider}', '${rec.specialty}')">
+                        <div class="provider-name">${rec.provider}</div>
+                        <div class="provider-specialty">${rec.specialty}</div>
+                        <div class="provider-reason">${rec.reason}</div>
+                    </div>
+                `).join('');
+            }
+
+            // Populate record sections with AI recommendations
+            const sectionsContainer = document.getElementById('recordSections');
+            sectionsContainer.innerHTML = '';
+            
+            currentRecord.sections.forEach(section => {
+                const isAIRecommended = currentRecord.aiAnalysis && 
+                    currentRecord.aiAnalysis.shareRecommendations.some(rec => 
+                        rec.sections.includes(section));
+                
+                const checkboxItem = document.createElement('div');
+                checkboxItem.className = `checkbox-item ${isAIRecommended ? 'ai-suggested' : ''}`;
+                checkboxItem.innerHTML = `
+                    <input type="checkbox" id="section_${section}" ${isAIRecommended ? 'checked' : ''}>
+                    <label for="section_${section}">${section}</label>
+                `;
+                sectionsContainer.appendChild(checkboxItem);
+            });
+
+            document.getElementById('shareModal').classList.add('active');
+        }
+
+        function selectProvider(providerName, specialty) {
+            document.getElementById('recipientEmail').value = providerName.toLowerCase().replace(/\s+/g, '.') + '@hospital.com';
+            // You could also pre-fill wallet address for known providers
+        }
+
+        function closeShareModal() {
+            document.getElementById('shareModal').classList.remove('active');
+            currentRecord = null;
+        }
+
+        async function shareRecord() {
+            const recipientEmail = document.getElementById('recipientEmail').value;
+            const recipientWallet = document.getElementById('recipientWallet').value;
+            const accessDuration = document.getElementById('accessDuration').value;
+
+            if (!recipientEmail || !recipientWallet) {
+                showAlert('Please provide recipient email and wallet address.', 'error');
+                return;
+            }
+
+            const selectedSections = [];
+            document.querySelectorAll('#recordSections input[type="checkbox"]:checked').forEach(checkbox => {
+                selectedSections.push(checkbox.nextElementSibling.textContent);
+            });
+
+            if (selectedSections.length === 0) {
+                showAlert('Please select at least one section to share.', 'error');
+                return;
+            }
+
+            try {
+                showAlert('Processing AI-verified share request...', 'info');
+                
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                currentRecord.sharedWith.push(recipientEmail);
+                currentRecord.status = 'shared';
+
+                showAlert(`Record shared successfully with ${recipientEmail}! AI recommendations implemented.`, 'success');
+                closeShareModal();
+                loadRecords();
+
+            } catch (error) {
+                showAlert('Failed to share record. Please try again.', 'error');
+            }
+        }
+
+        // AI Chat Functions
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const chatInterface = document.getElementById('chatInterface');
+            
+            // Add user message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'chat-message user';
+            userMessage.innerHTML = `<strong>You:</strong><br>${message}`;
+            chatInterface.appendChild(userMessage);
+            
+            input.value = '';
+            chatInterface.scrollTop = chatInterface.scrollHeight;
+
+            // Simulate AI thinking
+            const thinkingMessage = document.createElement('div');
+            thinkingMessage.className = 'chat-message ai';
+            thinkingMessage.innerHTML = '<strong>AI Assistant:</strong><br>Analyzing your health records...';
+            chatInterface.appendChild(thinkingMessage);
+            chatInterface.scrollTop = chatInterface.scrollHeight;
+
+            // Generate AI response
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            const aiResponse = generateAIResponse(message);
+            thinkingMessage.innerHTML = `<strong>AI Assistant:</strong><br>${aiResponse}`;
+            chatInterface.scrollTop = chatInterface.scrollHeight;
+        }
+
+        function generateAIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            if (message.includes('blood pressure') || message.includes('bp')) {
+                return `Based on your recent blood pressure monitoring record, I noticed an upward trend with an average of 142/88 mmHg, which indicates Stage 1 hypertension. I recommend:
+                
+                1. 🏥 Schedule a cardiology appointment within 2 weeks
+                2. 📋 Share your BP data with Dr. Michael Chen (Internal Medicine) 
+                3. 💊 Discuss medication options with your doctor
+                4. 🥗 Consider dietary modifications (reduce sodium, increase potassium)
+                
+                Would you like me to help you share your BP records with a cardiologist?`;
+            }
+            
+            if (message.includes('lab') || message.includes('blood test')) {
+                return `Your recent blood test results look excellent! All values are within normal ranges:
+                
+                ✅ Total cholesterol: 165 mg/dL (Excellent)
+                ✅ Blood glucose: 92 mg/dL (Normal)  
+                ✅ White blood cell count: Normal
+                
+                This indicates good overall health. I recommend sharing these results with your primary care physician for your annual health review. Would you like me to suggest which sections to share?`;
+            }
+            
+            if (message.includes('share') || message.includes('doctor')) {
+                return `I can help you share records with the right specialists! Based on your records, here are my AI recommendations:
+                
+                🔴 **High Priority**: Blood pressure data → Cardiologist (Dr. Sarah Johnson)
+                🟡 **Medium Priority**: Lab results → Primary care physician  
+                🟢 **Low Priority**: Chest X-ray → Keep for reference
+                
+                I can automatically select the most relevant sections and suggest appropriate providers. Which record would you like to share?`;
+            }
+            
+            if (message.includes('risk') || message.includes('health')) {
+                return `Based on AI analysis of your records, here's your current health risk assessment:
+                
+                ⚠️ **Elevated Risk**: Cardiovascular (due to BP trend)
+                ✅ **Low Risk**: Metabolic health (excellent lab values)
+                ✅ **Low Risk**: Respiratory health (clear chest X-ray)
+                
+                **Overall Health Score: 72/100**
+                
+                The main area for improvement is blood pressure management. Early intervention can significantly reduce cardiovascular risk. Would you like specific recommendations?`;
+            }
+            
+            return `I'm analyzing your health records using AI. I can help you:
+            
+            🔍 Understand what your test results mean
+            📊 Identify health trends and risks  
+            🏥 Recommend which doctors to share records with
+            💡 Suggest next steps for your healthcare
+            
+            Try asking me about your blood pressure, lab results, or which doctors you should share your records with!`;
+        }
+
+        // Utility Functions
+        function viewRecord(recordId) {
+            const record = healthRecords.find(r => r.id === recordId);
+            if (record) {
+                showAlert(`Viewing ${record.title} - In a real app, this would decrypt and display the record with AI annotations.`, 'success');
+            }
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.className = `alert alert-${type} active`;
+            alert.textContent = message;
+            
+            setTimeout(() => {
+                alert.classList.remove('active');
+            }, 5000);
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRecords();
+            updateHealthScore();
+            
+            // Add drag & drop functionality
+            const uploadArea = document.querySelector('.upload-area');
+            
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                document.getElementById('fileInput').files = e.dataTransfer.files;
+                handleFileSelect({ target: { files: e.dataTransfer.files } });
+            });
+        });
+
+        // Update the header title to "HealthPass"
+        // Replace the existing header div with this:
+        // <div class="header">
+        //     <h1>🤖 HealthPass</h1>
+        //     <p>Intelligent Health Records • AI-Powered Insights</p>
+        // </div>
+
+        // Add this right after your existing uploadRecord function
+        function simulateFileUpload() {
+            // Create a mock File object
+            const mockFile = new File(["colonoscopy report data"], "colonoscopy_results.pdf", {
+                type: "application/pdf",
+            });
+            
+            // Create a mock FileList
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(mockFile);
+            const fileList = dataTransfer.files;
+            
+            // Set the file input's files
+            const fileInput = document.getElementById('fileInput');
+            // Use this approach for browsers that support it
+            try {
+                fileInput.files = fileList;
+            } catch(e) {
+                // Just show visual feedback if direct assignment isn't supported
+                document.querySelector('.upload-area .upload-icon').textContent = '✓';
+            }
+            
+            // Add visual indication that a file was "uploaded"
+            const uploadArea = document.querySelector('.upload-area');
+            uploadArea.innerHTML = `
+                <div class="upload-icon" style="color: #28a745;">✓</div>
+                <h3>colonoscopy_results.pdf</h3>
+                <p>Ready for AI analysis</p>
+            `;
+            
+            // Show AI is analyzing
+            showAlert("AI analyzing colonoscopy results...", "info");
+            
+            // Simulate AI analysis with delay
+            setTimeout(() => {
+                // AI detected details
+                const detectedType = "imaging";
+                const detectedDescription = "Routine colonoscopy screening results";
+                
+                // Update the form with AI's detection
+                document.getElementById('recordType').value = detectedType;
+                document.getElementById('recordDescription').value = detectedDescription;
+                
+                // Show editable AI detection message
+                const formContainer = document.createElement('div');
+                formContainer.className = "ai-analysis active";
+                formContainer.style.marginBottom = "20px";
+                formContainer.innerHTML = `
+                    <div class="ai-section">
+                        <h4>AI Document Analysis</h4>
+                        <div class="ai-insights">
+                            <p>AI has analyzed your document and detected:</p>
+                            <ul>
+                                <li>Document type: <strong>Colonoscopy Report</strong></li>
+                                <li>Date: <strong>May 28, 2024</strong></li>
+                                <li>Provider: <strong>Dr. James Wilson, Gastroenterology</strong></li>
+                            </ul>
+                            <p style="margin-top:10px; font-style:italic;">You can edit the type and description below if needed.</p>
+                        </div>
+                    </div>
+                `;
+                
+                // Insert the AI analysis before the record type form group
+                const uploadTab = document.getElementById('upload-tab');
+                const formGroup = uploadTab.querySelector('.form-group');
+                uploadTab.insertBefore(formContainer, formGroup);
+                
+                showAlert("AI analysis complete! You can review and edit the detected type and description.", "success");
+                
+                // Add button to save the record to the list
+                const saveButton = document.createElement('button');
+                saveButton.className = "btn";
+                saveButton.textContent = "Save to My Records";
+                saveButton.style.marginBottom = "20px";
+                saveButton.onclick = function() {
+                    saveSimulatedRecord(detectedType, document.getElementById('recordDescription').value);
+                };
+                
+                uploadTab.insertBefore(saveButton, document.getElementById('uploadLoading'));
+            }, 2000);
+        }
+        
+        // Function to save the simulated record to the records list
+        function saveSimulatedRecord(recordType, description) {
+            // Create AI analysis for colonoscopy
+            const aiAnalysis = {
+                summary: 'Routine colonoscopy screening shows normal findings with no polyps or abnormalities detected.',
+                insights: [
+                    'Colon mucosa: Normal appearance throughout',
+                    'No polyps or masses detected',
+                    'No evidence of inflammation or bleeding',
+                    'Cecum and terminal ileum: Normal appearance'
+                ],
+                recommendations: [
+                    {
+                        priority: 'low',
+                        action: 'Schedule next routine colonoscopy in 10 years',
+                        reasoning: 'Normal screening results with no family history of colorectal cancer'
+                    }
+                ],
+                shareRecommendations: [
+                    {
+                        provider: 'Dr. Michael Chen, MD',
+                        specialty: 'Primary Care',
+                        reason: 'For your medical history records',
+                        sections: ['Colonoscopy Images', 'Findings Summary'],
+                        priority: 'low'
+                    }
+                ]
+            };
+
+            // Create new record
+            const newRecord = {
+                id: 'rec_' + Date.now(),
+                type: recordType,
+                title: description,
+                date: '2024-05-28',
+                description: description,
+                azureBlobUrl: `https://healthstorage.blob.core.windows.net/records/rec_${Date.now()}.pdf`,
+                blockchainHash: '0x' + Math.random().toString(16).substr(2, 40),
+                sections: ['Colonoscopy Images', 'Findings Summary', 'Recommendations'],
+                status: 'reviewed',
+                sharedWith: [],
+                aiAnalysis: aiAnalysis
+            };
+
+            // Add to records array
+            healthRecords.push(newRecord);
+            
+            showAlert('Colonoscopy record added to your records!', 'success');
+            
+            // Clear form elements
+            document.getElementById('fileInput').value = '';
+            document.getElementById('recordType').value = 'lab';
+            document.getElementById('recordDescription').value = '';
+            
+            // Remove AI analysis and save button
+            const uploadTab = document.getElementById('upload-tab');
+            const aiAnalysisDiv = uploadTab.querySelector('.ai-analysis');
+            if (aiAnalysisDiv) uploadTab.removeChild(aiAnalysisDiv);
+            
+            const saveBtn = Array.from(uploadTab.querySelectorAll('.btn')).find(btn => btn.textContent === "Save to My Records");
+            if (saveBtn) uploadTab.removeChild(saveBtn);
+            
+            // Reset upload area
+            const uploadArea = document.querySelector('.upload-area');
+            uploadArea.innerHTML = `
+                <div class="upload-icon">📁</div>
+                <h3>Upload Medical Records</h3>
+                <p>AI will analyze your records automatically</p>
+                <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                    Supported: PDF, JPG, PNG, DICOM, Lab Results
+                </p>
+            `;
+            
+            // Switch to records tab
+            showTab('records');
+        }
+    </script>
+</body>
+</html>
