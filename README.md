@@ -23,7 +23,7 @@ Demo Link
 You can view and try the application directly through the repository’s GitHub Pages (if enabled) or by cloning and opening index.html locally:
 
 GitHub Repository:
-https://github.com/picostar/healthpass1
+https://github.com/picostar/MycoMesh
 
 If you need a direct GitHub Pages demo link and it’s enabled, it will typically be:
-https://picostar.github.io/healthpass1/
+https://picostar.github.io/MycoMesh/
