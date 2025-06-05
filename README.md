@@ -1,4 +1,7 @@
 # Project MycoMesh
+
+This is a non-working Mock-UP to explore concepts
+
 Summary of Functions
 1. Medical Record Upload & AI Analysis
 
