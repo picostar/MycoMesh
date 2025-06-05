@@ -1551,163 +1551,163 @@
         // </div>
 
         // Add this right after your existing uploadRecord function
-        // function simulateFileUpload() {
-        //     // Create a mock File object
-        //     const mockFile = new File(["colonoscopy report data"], "colonoscopy_results.pdf", {
-        //         type: "application/pdf",
-        //     });
+        function simulateFileUpload() {
+            // Create a mock File object
+            const mockFile = new File(["colonoscopy report data"], "colonoscopy_results.pdf", {
+                type: "application/pdf",
+            });
             
-        //     // Create a mock FileList
-        //     const dataTransfer = new DataTransfer();
-        //     dataTransfer.items.add(mockFile);
-        //     const fileList = dataTransfer.files;
+            // Create a mock FileList
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(mockFile);
+            const fileList = dataTransfer.files;
             
-        //     // Set the file input's files
-        //     const fileInput = document.getElementById('fileInput');
-        //     // Use this approach for browsers that support it
-        //     try {
-        //         fileInput.files = fileList;
-        //     } catch(e) {
-        //         // Just show visual feedback if direct assignment isn't supported
-        //         document.querySelector('.upload-area .upload-icon').textContent = '✓';
-        //     }
+            // Set the file input's files
+            const fileInput = document.getElementById('fileInput');
+            // Use this approach for browsers that support it
+            try {
+                fileInput.files = fileList;
+            } catch(e) {
+                // Just show visual feedback if direct assignment isn't supported
+                document.querySelector('.upload-area .upload-icon').textContent = '✓';
+            }
             
-        //     // Add visual indication that a file was "uploaded"
-        //     const uploadArea = document.querySelector('.upload-area');
-        //     uploadArea.innerHTML = `
-        //         <div class="upload-icon" style="color: #28a745;">✓</div>
-        //         <h3>colonoscopy_results.pdf</h3>
-        //         <p>Ready for AI analysis</p>
-        //     `;
+            // Add visual indication that a file was "uploaded"
+            const uploadArea = document.querySelector('.upload-area');
+            uploadArea.innerHTML = `
+                <div class="upload-icon" style="color: #28a745;">✓</div>
+                <h3>colonoscopy_results.pdf</h3>
+                <p>Ready for AI analysis</p>
+            `;
             
-        //     // Show AI is analyzing
-        //     showAlert("AI analyzing colonoscopy results...", "info");
+            // Show AI is analyzing
+            showAlert("AI analyzing colonoscopy results...", "info");
             
-        //     // Simulate AI analysis with delay
-        //     setTimeout(() => {
-        //         // AI detected details
-        //         const detectedType = "imaging";
-        //         const detectedDescription = "Routine colonoscopy screening results";
+            // Simulate AI analysis with delay
+            setTimeout(() => {
+                // AI detected details
+                const detectedType = "imaging";
+                const detectedDescription = "Routine colonoscopy screening results";
                 
-        //         // Update the form with AI's detection
-        //         document.getElementById('recordType').value = detectedType;
-        //         document.getElementById('recordDescription').value = detectedDescription;
+                // Update the form with AI's detection
+                document.getElementById('recordType').value = detectedType;
+                document.getElementById('recordDescription').value = detectedDescription;
                 
-        //         // Show editable AI detection message
-        //         const formContainer = document.createElement('div');
-        //         formContainer.className = "ai-analysis active";
-        //         formContainer.style.marginBottom = "20px";
-        //         formContainer.innerHTML = `
-        //             <div class="ai-section">
-        //                 <h4>AI Document Analysis</h4>
-        //                 <div class="ai-insights">
-        //                     <p>AI has analyzed your document and detected:</p>
-        //                     <ul>
-        //                         <li>Document type: <strong>Colonoscopy Report</strong></li>
-        //                         <li>Date: <strong>May 28, 2024</strong></li>
-        //                         <li>Provider: <strong>Dr. James Wilson, Gastroenterology</strong></li>
-        //                     </ul>
-        //                     <p style="margin-top:10px; font-style:italic;">You can edit the type and description below if needed.</p>
-        //                 </div>
-        //             </div>
-        //         `;
+                // Show editable AI detection message
+                const formContainer = document.createElement('div');
+                formContainer.className = "ai-analysis active";
+                formContainer.style.marginBottom = "20px";
+                formContainer.innerHTML = `
+                    <div class="ai-section">
+                        <h4>AI Document Analysis</h4>
+                        <div class="ai-insights">
+                            <p>AI has analyzed your document and detected:</p>
+                            <ul>
+                                <li>Document type: <strong>Colonoscopy Report</strong></li>
+                                <li>Date: <strong>May 28, 2024</strong></li>
+                                <li>Provider: <strong>Dr. James Wilson, Gastroenterology</strong></li>
+                            </ul>
+                            <p style="margin-top:10px; font-style:italic;">You can edit the type and description below if needed.</p>
+                        </div>
+                    </div>
+                `;
                 
-        //         // Insert the AI analysis before the record type form group
-        //         const uploadTab = document.getElementById('upload-tab');
-        //         const formGroup = uploadTab.querySelector('.form-group');
-        //         uploadTab.insertBefore(formContainer, formGroup);
+                // Insert the AI analysis before the record type form group
+                const uploadTab = document.getElementById('upload-tab');
+                const formGroup = uploadTab.querySelector('.form-group');
+                uploadTab.insertBefore(formContainer, formGroup);
                 
-        //         showAlert("AI analysis complete! You can review and edit the detected type and description.", "success");
+                showAlert("AI analysis complete! You can review and edit the detected type and description.", "success");
                 
-        //         // Add button to save the record to the list
-        //         const saveButton = document.createElement('button');
-        //         saveButton.className = "btn";
-        //         saveButton.textContent = "Save to My Records";
-        //         saveButton.style.marginBottom = "20px";
-        //         saveButton.onclick = function() {
-        //             saveSimulatedRecord(detectedType, document.getElementById('recordDescription').value);
-        //         };
+                // Add button to save the record to the list
+                const saveButton = document.createElement('button');
+                saveButton.className = "btn";
+                saveButton.textContent = "Save to My Records";
+                saveButton.style.marginBottom = "20px";
+                saveButton.onclick = function() {
+                    saveSimulatedRecord(detectedType, document.getElementById('recordDescription').value);
+                };
                 
-        //         uploadTab.insertBefore(saveButton, document.getElementById('uploadLoading'));
-        //     }, 2000);
-        // }
+                uploadTab.insertBefore(saveButton, document.getElementById('uploadLoading'));
+            }, 2000);
+        }
         
         // Function to save the simulated record to the records list
-        // function saveSimulatedRecord(recordType, description) {
-        //     // Create AI analysis for colonoscopy
-        //     const aiAnalysis = {
-        //         summary: 'Routine colonoscopy screening shows normal findings with no polyps or abnormalities detected.',
-        //         insights: [
-        //             'Colon mucosa: Normal appearance throughout',
-        //             'No polyps or masses detected',
-        //             'No evidence of inflammation or bleeding',
-        //             'Cecum and terminal ileum: Normal appearance'
-        //         ],
-        //         recommendations: [
-        //             {
-        //                 priority: 'low',
-        //                 action: 'Schedule next routine colonoscopy in 10 years',
-        //                 reasoning: 'Normal screening results with no family history of colorectal cancer'
-        //             }
-        //         ],
-        //         shareRecommendations: [
-        //             {
-        //                 provider: 'Dr. Michael Chen, MD',
-        //                 specialty: 'Primary Care',
-        //                 reason: 'For your medical history records',
-        //                 sections: ['Colonoscopy Images', 'Findings Summary'],
-        //                 priority: 'low'
-        //             }
-        //         ]
-        //     };
+        function saveSimulatedRecord(recordType, description) {
+            // Create AI analysis for colonoscopy
+            const aiAnalysis = {
+                summary: 'Routine colonoscopy screening shows normal findings with no polyps or abnormalities detected.',
+                insights: [
+                    'Colon mucosa: Normal appearance throughout',
+                    'No polyps or masses detected',
+                    'No evidence of inflammation or bleeding',
+                    'Cecum and terminal ileum: Normal appearance'
+                ],
+                recommendations: [
+                    {
+                        priority: 'low',
+                        action: 'Schedule next routine colonoscopy in 10 years',
+                        reasoning: 'Normal screening results with no family history of colorectal cancer'
+                    }
+                ],
+                shareRecommendations: [
+                    {
+                        provider: 'Dr. Michael Chen, MD',
+                        specialty: 'Primary Care',
+                        reason: 'For your medical history records',
+                        sections: ['Colonoscopy Images', 'Findings Summary'],
+                        priority: 'low'
+                    }
+                ]
+            };
 
-        //     // Create new record
-        //     const newRecord = {
-        //         id: 'rec_' + Date.now(),
-        //         type: recordType,
-        //         title: description,
-        //         date: '2024-05-28',
-        //         description: description,
-        //         azureBlobUrl: `https://healthstorage.blob.core.windows.net/records/rec_${Date.now()}.pdf`,
-        //         blockchainHash: '0x' + Math.random().toString(16).substr(2, 40),
-        //         sections: ['Colonoscopy Images', 'Findings Summary', 'Recommendations'],
-        //         status: 'reviewed',
-        //         sharedWith: [],
-        //         aiAnalysis: aiAnalysis
-        //     };
+            // Create new record
+            const newRecord = {
+                id: 'rec_' + Date.now(),
+                type: recordType,
+                title: description,
+                date: '2024-05-28',
+                description: description,
+                azureBlobUrl: `https://healthstorage.blob.core.windows.net/records/rec_${Date.now()}.pdf`,
+                blockchainHash: '0x' + Math.random().toString(16).substr(2, 40),
+                sections: ['Colonoscopy Images', 'Findings Summary', 'Recommendations'],
+                status: 'reviewed',
+                sharedWith: [],
+                aiAnalysis: aiAnalysis
+            };
 
-        //     // Add to records array
-        //     healthRecords.push(newRecord);
+            // Add to records array
+            healthRecords.push(newRecord);
             
-        //     showAlert('Colonoscopy record added to your records!', 'success');
+            showAlert('Colonoscopy record added to your records!', 'success');
             
-        //     // Clear form elements
-        //     document.getElementById('fileInput').value = '';
-        //     document.getElementById('recordType').value = 'lab';
-        //     document.getElementById('recordDescription').value = '';
+            // Clear form elements
+            document.getElementById('fileInput').value = '';
+            document.getElementById('recordType').value = 'lab';
+            document.getElementById('recordDescription').value = '';
             
-        //     // Remove AI analysis and save button
-        //     const uploadTab = document.getElementById('upload-tab');
-        //     const aiAnalysisDiv = uploadTab.querySelector('.ai-analysis');
-        //     if (aiAnalysisDiv) uploadTab.removeChild(aiAnalysisDiv);
+            // Remove AI analysis and save button
+            const uploadTab = document.getElementById('upload-tab');
+            const aiAnalysisDiv = uploadTab.querySelector('.ai-analysis');
+            if (aiAnalysisDiv) uploadTab.removeChild(aiAnalysisDiv);
             
-        //     const saveBtn = Array.from(uploadTab.querySelectorAll('.btn')).find(btn => btn.textContent === "Save to My Records");
-        //     if (saveBtn) uploadTab.removeChild(saveBtn);
+            const saveBtn = Array.from(uploadTab.querySelectorAll('.btn')).find(btn => btn.textContent === "Save to My Records");
+            if (saveBtn) uploadTab.removeChild(saveBtn);
             
-        //     // Reset upload area
-        //     const uploadArea = document.querySelector('.upload-area');
-        //     uploadArea.innerHTML = `
-        //         <div class="upload-icon">📁</div>
-        //         <h3>Upload Medical Records</h3>
-        //         <p>AI will analyze your records automatically</p>
-        //         <p style="font-size: 12px; color: #666; margin-top: 10px;">
-        //             Supported: PDF, JPG, PNG, DICOM, Lab Results
-        //         </p>
-        //     `;
+            // Reset upload area
+            const uploadArea = document.querySelector('.upload-area');
+            uploadArea.innerHTML = `
+                <div class="upload-icon">📁</div>
+                <h3>Upload Medical Records</h3>
+                <p>AI will analyze your records automatically</p>
+                <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                    Supported: PDF, JPG, PNG, DICOM, Lab Results
+                </p>
+            `;
             
-        //     // Switch to records tab
-        //     showTab('records');
-        // }
+            // Switch to records tab
+            showTab('records');
+        }
     </script>
 </body>
 </html>
